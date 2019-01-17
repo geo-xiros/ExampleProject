@@ -27,68 +27,41 @@ namespace WebApplication2.Controllers
             return View();
         }
 
-        public ActionResult Details(int id)
+        public ActionResult Details(string name)
         {
-            return View();
+            var employee = db.Employees().Where(e => e.Name.Contains(name));
+            return View(employee);
         }
 
-        public ActionResult Create()
-        {
-            return View();
-        }
 
-        [HttpPost]
-        public ActionResult Create(Employee employee)
+        public ActionResult Create(string name, string location)
         {
             // TODO: Add insert logic here
+            Employee employee = new Employee()
+            {
+                Name = name,
+                Location = location
+            };
+
             db.Insert(employee);
 
-            if (db.DbError==null)
-            {
-                return RedirectToAction("Index");
-            }
-
-            return View();
+            return RedirectToAction("Index");
         }
 
-        public ActionResult Edit(int id)
+        public ActionResult Edit(string name)
         {
-            return View();
+
+            db.Update(name);
+
+            return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Delete(string name)
         {
-            try
-            {
-                // TODO: Add update logic here
+            db.Delete(name);
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction("Index");
         }
 
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }
