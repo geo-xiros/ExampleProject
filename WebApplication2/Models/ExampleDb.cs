@@ -9,7 +9,7 @@ namespace WebApplication2.Models
 {
     public class ExampleDb
     {
-        private String connstring = "Data Source=\"ra1.anystream.eu,1010\";Initial Catalog=example_database;User ID=example_user;Password=example_password";
+        private String connstring = "Data Source=\"ra1.anystream.eu,1010\";Initial Catalog=example_database;User ID=sa;Password=aDifficultPassword$";
         public string DbError;
 
         public List<Employee> Employees()
@@ -108,7 +108,7 @@ namespace WebApplication2.Models
 
                 using (SqlConnection connection = new SqlConnection(connstring))
                 {
-                    string sql = "DELETE FROM Employees WHERE Name = @name;");
+                    string sql = "DELETE FROM Employees WHERE Name = @name;";
 
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
@@ -128,9 +128,13 @@ namespace WebApplication2.Models
             DbError = null;
             try
             {
-                using (SqlConnection connection = new SqlConnection(connstring))
+                using (SqlConnection connection = new SqlConnection("Data Source=ra1.anystream.eu,1010;Initial Catalog=master;User ID=sa;Password=aDifficultPassword$"))
                 {
                     connection.Open();
+                    //using (SqlCommand command = new SqlCommand("create database example_database; ", connection))
+                    //{
+                    //    command.ExecuteNonQuery();
+                    //}
 
                     StringBuilder sb = new StringBuilder();
                     sb.Append("USE example_database; ");
