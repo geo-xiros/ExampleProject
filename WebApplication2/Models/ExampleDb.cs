@@ -15,33 +15,105 @@ namespace WebApplication2.Models
         {
             Create();
         }
+
         public List<Employee> Employees()
         {
             // READ demo
             List<Employee> employees = new List<Employee>();
-            DbError = null;
 
+            TryCommand("SELECT Id, Name, Location FROM Employees;", (command) =>
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Employee employee = new Employee()
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            Location = reader.GetString(2)
+                        };
+                        employees.Add(employee);
+                    }
+                }
+            });
+
+            return employees;
+        }
+        public int Insert(Employee employee)
+        {
+            // INSERT demo
+            int rowsAffected = 0;
+
+            TryCommand("INSERT Employees (Name, Location)VALUES (@name, @location); ", (command) =>
+            {
+                command.Parameters.AddWithValue("@name", employee.Name);
+                command.Parameters.AddWithValue("@location", employee.Location);
+                rowsAffected = command.ExecuteNonQuery();
+            });
+
+            return rowsAffected;
+        }
+        public int Update(String userToUpdate)
+        {
+            // UPDATE demo
+            int rowsAffected = 0;
+
+            TryCommand("UPDATE Employees SET Location = N'United States' WHERE Name = @name", (command) =>
+            {
+                command.Parameters.AddWithValue("@name", userToUpdate);
+                rowsAffected = command.ExecuteNonQuery();
+            });
+
+            return rowsAffected;
+        }
+        public int Delete(string userToDelete)
+        {
+            // DELETE demo
+            int rowsAffected = 0;
+            TryCommand("DELETE FROM Employees WHERE Name = @name;", (command) =>
+            {
+                command.Parameters.AddWithValue("@name", userToDelete);
+                rowsAffected = command.ExecuteNonQuery();
+            });
+
+            return rowsAffected;
+        }
+        public void Create()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("USE example_database; ");
+            sb.Append("DROP TABLE IF EXISTS Employees;");
+            sb.Append("CREATE TABLE Employees ( ");
+            sb.Append(" Id INT IDENTITY(1,1) NOT NULL PRIMARY KEY, ");
+            sb.Append(" Name NVARCHAR(50), ");
+            sb.Append(" Location NVARCHAR(50) ");
+            sb.Append("); ");
+            sb.Append("INSERT INTO Employees (Name, Location) VALUES ");
+            sb.Append("(N'Jared', N'Australia'), ");
+            sb.Append("(N'Nikita', N'India'), ");
+            sb.Append("(N'Tom', N'Germany'); ");
+            string cmdText = sb.ToString();
+
+            TryCommand(cmdText, (command) =>
+            {
+                command.ExecuteNonQuery();
+            });
+
+        }
+
+        private void TryCommand(string cmdText, Action<SqlCommand> execute)
+        {
             try
             {
                 using (SqlConnection connection = new SqlConnection(connstring))
                 {
-                    connection.Open();
-                    string sql = "SELECT Id, Name, Location FROM Employees;";
-                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    using (SqlCommand command = new SqlCommand(cmdText, connection))
                     {
-                        using (SqlDataReader reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                Employee employee = new Employee()
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Name = reader.GetString(1),
-                                    Location = reader.GetString(2)
-                                };
-                                employees.Add(employee);
-                            }
-                        }
+                        connection.Open();
+                        execute(command);
+                        DbError = null;
                     }
                 }
             }
@@ -49,121 +121,6 @@ namespace WebApplication2.Models
             {
                 DbError = e.Message;
             }
-
-            return employees;
-        }
-        public int Insert(Employee employee)
-        {
-            // INSERT demo
-            
-            int rowsAffected=0;
-            DbError = null;
-            try
-            {
-                string sql = "INSERT Employees (Name, Location)VALUES (@name, @location); ";
-                using (SqlConnection connection = new SqlConnection(connstring))
-                {
-                    connection.Open();
-                    using (SqlCommand command = new SqlCommand(sql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", employee.Name);
-                        command.Parameters.AddWithValue("@location", employee.Location);
-                        rowsAffected = command.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch (SqlException e)
-            {
-                DbError = e.ToString();
-            }
-            return rowsAffected;
-        }
-        public int Update(String userToUpdate)
-        {
-            int rowsAffected=0;
-            DbError = null;
-            try
-            {
-
-
-                using (SqlConnection connection = new SqlConnection(connstring))
-                {
-                    connection.Open();
-                    // UPDATE demo
-                    string sql = "UPDATE Employees SET Location = N'United States' WHERE Name = @name";
-                    using (SqlCommand command = new SqlCommand(sql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", userToUpdate);
-                        rowsAffected = command.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch (SqlException e)
-            {
-                DbError = e.ToString();
-            }
-            return rowsAffected;
-        }
-        public int Delete(string userToDelete)
-        {
-            int rowsAffected=0;
-            DbError = null;
-            try
-            {
-
-
-                using (SqlConnection connection = new SqlConnection(connstring))
-                {
-                    connection.Open();
-                    string sql = "DELETE FROM Employees WHERE Name = @name;";
-
-                    using (SqlCommand command = new SqlCommand(sql, connection))
-                    {
-                        command.Parameters.AddWithValue("@name", userToDelete);
-                        rowsAffected = command.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch (SqlException e)
-            {
-                DbError = e.ToString();
-            }
-            return rowsAffected;
-        }
-        public void Create()
-        {
-            DbError = null;
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(connstring))
-                {
-                    connection.Open();
-
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append("USE example_database; ");
-                    sb.Append("DROP TABLE IF EXISTS Employees;");
-                    sb.Append("CREATE TABLE Employees ( ");
-                    sb.Append(" Id INT IDENTITY(1,1) NOT NULL PRIMARY KEY, ");
-                    sb.Append(" Name NVARCHAR(50), ");
-                    sb.Append(" Location NVARCHAR(50) ");
-                    sb.Append("); ");
-                    sb.Append("INSERT INTO Employees (Name, Location) VALUES ");
-                    sb.Append("(N'Jared', N'Australia'), ");
-                    sb.Append("(N'Nikita', N'India'), ");
-                    sb.Append("(N'Tom', N'Germany'); ");
-                    string sql = sb.ToString();
-                    using (SqlCommand command = new SqlCommand(sql, connection))
-                    {
-                        command.ExecuteNonQuery();
-                    }
-
-                }
-            }
-            catch (SqlException e)
-            {
-                DbError = e.ToString();
-            }
-
         }
     }
 }
