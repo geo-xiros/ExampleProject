@@ -19,15 +19,18 @@ namespace WebApplication2.Controllers
             return View(employees);
         }
 
-        public string CreateDb()
+        public ActionResult CreateDb()
         {
             db.Create();
+
             if (db.DbError == null)
             {
-                return "Done.";
+                return RedirectToAction("Index");
             }
 
-            return db.DbError;
+            ViewBag.Error = db.DbError;
+            return View("Error");
+
         }
 
 

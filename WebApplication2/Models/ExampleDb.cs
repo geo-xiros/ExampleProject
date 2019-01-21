@@ -11,10 +11,6 @@ namespace WebApplication2.Models
     {
         private String connstring = "Data Source=ra1.anystream.eu,1010;Initial Catalog=example_database;User ID=sa;Password=aDifficultPassword$";
         public string DbError;
-        public ExampleDb()
-        {
-            Create();
-        }
 
         public List<Employee> Employees()
         {
