@@ -23,13 +23,7 @@ namespace WebApplication2.Controllers
         {
             db.Create();
 
-            if (db.DbError == null)
-            {
-                return RedirectToAction("Index");
-            }
-
-            ViewBag.Error = db.DbError;
-            return View("Error");
+            return RedirectToIndex();
 
         }
 
@@ -53,7 +47,7 @@ namespace WebApplication2.Controllers
 
             db.Insert(employee);
 
-            return RedirectToAction("Index");
+            return RedirectToIndex();
         }
 
         public ActionResult Edit(string name)
@@ -61,15 +55,25 @@ namespace WebApplication2.Controllers
 
             db.Update(name);
 
-            return RedirectToAction("Index");
+            return RedirectToIndex();
         }
 
         public ActionResult Delete(string name)
         {
             db.Delete(name);
 
-            return RedirectToAction("Index");
+            return RedirectToIndex();
         }
 
+        private ActionResult RedirectToIndex()
+        {
+            if (db.DbError == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.Error = db.DbError;
+            return View("Error");
+        }
     }
 }
