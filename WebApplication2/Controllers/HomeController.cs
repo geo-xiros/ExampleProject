@@ -7,9 +7,17 @@ using WebApplication2.Models;
 
 namespace WebApplication2.Controllers
 {
-    public class DefaultController : Controller
+    public class HomeController : Controller
     {
         private ExampleDb db = new ExampleDb();
+
+        public ActionResult Index()
+        {
+            List<Employee> employees = db.Employees();
+            ViewBag.Title = "Details";
+
+            return View(employees);
+        }
 
         public string CreateDb()
         {
@@ -22,15 +30,12 @@ namespace WebApplication2.Controllers
             return db.DbError;
         }
 
-        public ActionResult Index()
-        {
-            return View();
-        }
+
 
         public ActionResult Details(string name)
         {
             var employee = db.Employees().Where(e => e.Name.Contains(name));
-            return View(employee);
+            return View(employee.FirstOrDefault());
         }
 
 

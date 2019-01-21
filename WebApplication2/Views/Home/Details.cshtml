@@ -1,8 +1,4 @@
-﻿@model WebApplication2.Models.Employee 
-
-@{
-    ViewBag.Title = "Details";
-}
+﻿@model WebApplication2.Models.Employee
 
 <h2>Details</h2>
 
@@ -15,11 +11,16 @@
         </dt>
 
         <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Location)
+        </dt>
+
+        <dd>
             @Html.DisplayFor(model => model.Location)
         </dd>
+                        
     </dl>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>

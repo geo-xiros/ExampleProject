@@ -9,9 +9,12 @@ namespace WebApplication2.Models
 {
     public class ExampleDb
     {
-        private String connstring = "Data Source=\"ra1.anystream.eu,1010\";Initial Catalog=example_database;User ID=sa;Password=aDifficultPassword$";
+        private String connstring = "Data Source=ra1.anystream.eu,1010;Initial Catalog=example_database;User ID=sa;Password=aDifficultPassword$";
         public string DbError;
-
+        public ExampleDb()
+        {
+            Create();
+        }
         public List<Employee> Employees()
         {
             // READ demo
@@ -22,6 +25,7 @@ namespace WebApplication2.Models
             {
                 using (SqlConnection connection = new SqlConnection(connstring))
                 {
+                    connection.Open();
                     string sql = "SELECT Id, Name, Location FROM Employees;";
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
@@ -59,6 +63,7 @@ namespace WebApplication2.Models
                 string sql = "INSERT Employees (Name, Location)VALUES (@name, @location); ";
                 using (SqlConnection connection = new SqlConnection(connstring))
                 {
+                    connection.Open();
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@name", employee.Name);
@@ -83,6 +88,7 @@ namespace WebApplication2.Models
 
                 using (SqlConnection connection = new SqlConnection(connstring))
                 {
+                    connection.Open();
                     // UPDATE demo
                     string sql = "UPDATE Employees SET Location = N'United States' WHERE Name = @name";
                     using (SqlCommand command = new SqlCommand(sql, connection))
@@ -108,6 +114,7 @@ namespace WebApplication2.Models
 
                 using (SqlConnection connection = new SqlConnection(connstring))
                 {
+                    connection.Open();
                     string sql = "DELETE FROM Employees WHERE Name = @name;";
 
                     using (SqlCommand command = new SqlCommand(sql, connection))
@@ -128,13 +135,9 @@ namespace WebApplication2.Models
             DbError = null;
             try
             {
-                using (SqlConnection connection = new SqlConnection("Data Source=ra1.anystream.eu,1010;Initial Catalog=master;User ID=sa;Password=aDifficultPassword$"))
+                using (SqlConnection connection = new SqlConnection(connstring))
                 {
                     connection.Open();
-                    //using (SqlCommand command = new SqlCommand("create database example_database; ", connection))
-                    //{
-                    //    command.ExecuteNonQuery();
-                    //}
 
                     StringBuilder sb = new StringBuilder();
                     sb.Append("USE example_database; ");
